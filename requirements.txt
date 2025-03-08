@@ -1,0 +1,6 @@
+opencv-python>=4.8.0
+numpy>=1.26.0
+dlib>=19.24.0
+imutils>=0.5.4
+flask>=2.3.0
+werkzeug>=2.3.0

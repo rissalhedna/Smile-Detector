@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Smile Detector - Upload{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Upload a Video</h2>
+                
+                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+                    <div class="upload-container" id="drop-area">
+                        <p>Drag and drop a video file here, or click to select a file</p>
+                        <input type="file" name="video" id="fileInput" class="form-control" accept=".mp4,.avi,.mov,.wmv,.mkv" style="display: none;">
+                        <button type="button" class="btn btn-primary mt-3" id="browseButton">Browse Files</button>
+                    </div>
+                    
+                    <div class="selected-file mt-3 mb-3" id="selected-file" style="display: none;">
+                        <div class="alert alert-info">
+                            <strong>Selected file:</strong> <span id="filename"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success btn-lg" id="uploadButton" disabled>
+                            <i class="bi bi-cloud-upload"></i> Process Video
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h3 class="card-title">How It Works</h3>
+                <ol>
+                    <li>Upload a video containing human faces</li>
+                    <li>Our system will detect faces in each frame</li>
+                    <li>Facial landmarks will be identified, focusing on the mouth area</li>
+                    <li>The probability of a smile will be calculated based on mouth geometry</li>
+                    <li>Results will be displayed with visual indicators around the mouth</li>
+                </ol>
+                <p class="text-muted">Supported formats: MP4, AVI, MOV, WMV, MKV (max 100MB)</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('fileInput');
+        const browseButton = document.getElementById('browseButton');
+        const selectedFile = document.getElementById('selected-file');
+        const filename = document.getElementById('filename');
+        const uploadButton = document.getElementById('uploadButton');
+        
+        // Handle browse button click
+        browseButton.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        // Handle file selection
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        // Highlight drop area when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        // Handle dropped files
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        function highlight() {
+            dropArea.classList.add('border-primary');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('border-primary');
+        }
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+        
+        function handleFiles(files) {
+            if (files.length) {
+                const file = files[0];
+                
+                // Check if file is a video
+                const validTypes = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (validTypes.includes(fileExtension)) {
+                    fileInput.files = files;
+                    filename.textContent = file.name;
+                    selectedFile.style.display = 'block';
+                    uploadButton.disabled = false;
+                } else {
+                    alert('Please select a valid video file (MP4, AVI, MOV, WMV, MKV)');
+                }
+            }
+        }
+    });
+</script>
+{% endblock %} 

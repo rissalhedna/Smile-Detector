@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Smile Detector - Results{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Smile Detection Results</h2>
+                <p class="lead text-center">Video: <strong>{{ filename }}</strong></p>
+                
+                <div class="video-container text-center">
+                    <video id="result-video" controls class="img-fluid" style="max-height: 500px;">
+                        <source src="{{ url_for('video', video_id=video_id) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="result-info mt-4">
+                    <h4>About the Results</h4>
+                    <p>The processed video shows:</p>
+                    <ul>
+                        <li><span style="color: green;">Green rectangles</span>: Detected faces</li>
+                        <li><span style="color: red;">Red dots</span>: Facial landmarks around the mouth</li>
+                        <li>Smile probability: A value between 0.0 (no smile) and 1.0 (definite smile)</li>
+                    </ul>
+                    <p>The smile detection is based on the geometry of the mouth landmarks, analyzing the ratio between mouth width and height.</p>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">Process Another Video</a>
+                    <a href="{{ url_for('processed_file', filename=video_id + '_processed.mp4') }}" class="btn btn-success" download>Download Processed Video</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
